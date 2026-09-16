@@ -687,7 +687,7 @@ Write-Step "Running Local Installers"
 
 try { # Install most recent version of Notepad++ if the installer is in the same folder
 	Write-Host "`nInstalling Notepad++"
-	$installer = Get-ChildItem -Path $PSScriptRoot -Filter 'npp.*.Installer.x64.exe' -File |
+	$installer = Get-ChildItem -Path $PSScriptRoot -Filter 'npp.*.Installer*.exe' -File |
     Sort-Object Name -Descending |
     Select-Object -First 1
 
@@ -706,18 +706,30 @@ try { # Install most recent version of Notepad++ if the installer is in the same
 
 try { # Install most recent version of Chrome if the installer is in the same folder
 	Write-Host "`nInstalling Google Chrome"
-	$checkFile = 'ChromeSetup.exe'
-	if (-not (Test-Path $(Join-Path $PSScriptRoot $checkFile))) { 
-		$checkFile = 'GoogleChrome*.exe' }
-	elseif (-not (Test-Path $(Join-Path $PSScriptRoot $checkFile))) { 
-		$checkFile = 'chrome_installer.exe' }
-	elseif (-not (Test-Path $(Join-Path $PSScriptRoot $checkFile))) { 
-		$checkFile = '' }
 	
-	$installer = Get-ChildItem -Path $PSScriptRoot -Filter $checkFile -File |
-    Sort-Object Name -Descending |
-    Select-Object -First 1
+	if (Test-Path $(Join-Path $PSScriptRoot 'ChromeSetup*.exe')) { 
+		$checkFile = 'ChromeSetup*.exe'
+		write-host "hit: $checkFile" }
+	if (Test-Path $(Join-Path $PSScriptRoot 'ChromeSetup*.msi')) { 
+		$checkFile = 'ChromeSetup*.msi'
+		write-host "hit: $checkFile" }
+	elseif (Test-Path $(Join-Path $PSScriptRoot 'googlechrome*.exe' )) { 
+		$checkFile = 'googlechrome*.exe'
+		write-host "hit: $checkFile" }
+	elseif (Test-Path $(Join-Path $PSScriptRoot 'googlechrome*.msi')) { 
+		$checkFile = 'googlechrome*.msi'
+		write-host "hit: $checkFile" }
+	elseif (Test-Path $(Join-Path $PSScriptRoot 'chrome_installer*.exe')) { 
+		$checkFile = 'chrome_installer*.exe' 
+		write-host "hit: $checkFile" }
+	elseif (Test-Path $(Join-Path $PSScriptRoot 'chrome_installer*.msi')) { 
+		$checkFile = 'chrome_installer*.msi' 
+		write-host "hit: $checkFile" }
+	else { write-host "No hits on Google Chrome filter"}
 
+	$installer = Get-ChildItem -Path $PSScriptRoot -Filter $checkFile -File |
+    Select-Object -First 1
+	
 	if (-not $installer) {
 		throw "No Google Chrome installer found in $PSScriptRoot"
 	}
